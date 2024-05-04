@@ -1,9 +1,9 @@
 #include "sort.h"
 
 /**
- * swap - swaps 2 int values
- * @a: address of first value
- * @b: address of second value
+ * swap - does the swapping
+ * @a: location of the first value
+ * @b: location of second value
  *
  * Return: void
  */
