@@ -1,76 +1,86 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "sort.h"
-
+#include <stdio.h>
 /**
- * counting_sort - Sorts an array of integers in ascending order using the
- * Counting sort algorithm
- * @array: Pointer to the array to be sorted
- * @size: Size of the array
+ * _bigest -  Give me the largest number in a array of integers
+ * @array: The Int array
+ * @size: Size of array
+ * Return: The largest number
+ */
+int _bigest(int *array, size_t size)
+{
+	size_t i;
+	int k = 0;
+
+	for (i = 0; i < size; i++)
+	{
+		if (k < array[i])
+			k = array[i];
+	}
+
+	return (k);
+}
+/**
+ * _memset -  Create a integer array and set each space in 0
+ * @size: Size of array
+ * Return: The integer array
+ */
+int *_memset(int size)
+{
+	int *ptr = NULL;
+	int i;
+
+	ptr = malloc((size) * sizeof(int));
+
+	for (i = 0; i < size; i++)
+		ptr[i] = 0;
+
+	return (ptr);
+}
+/**
+ * counting_sort - sort an array with the counting sort algorithm
+ * @array: The Int array
+ * @size: Size of array
+ * Return: The sorted list
  */
 void counting_sort(int *array, size_t size)
 {
-    int i, max;
-    int *count_array, *sorted_array;
+	size_t i, j;
+	int k = 0;
+	int *ptr = NULL, *sort_ar = NULL;
 
-    if (array == NULL || size < 2)
-        return;
+	if (size < 2)
+		return;
+	/*Know the largest number in the array*/
+	k = _bigest(array, size);
+	/*Make the help array*/
+	ptr = _memset(k + 1);
+	if (!ptr)
+		return;
+	/*Set the values for sorting*/
+	for (i = 0; i < size; i++)
+		for (j = 0; (int)j < k + 1; j++)
+			if ((int)j == array[i])
+				ptr[j] += 1;
+	/*Modificate the count in the array*/
+	for (i = 0; (int)i < k; i++)
+		ptr[i + 1] = ptr[i] + ptr[i + 1];
+	print_array(ptr, k + 1);
+	/*Create the sort array*/
+	sort_ar = malloc(size * sizeof(int));
+	if (!sort_ar)
+	{
+		free(ptr);
+		return;
+	}
 
-    /* Find the maximum value in the array */
-    max = array[0];
-    for (i = 1; i < (int)size; i++)
-    {
-        if (array[i] > max)
-            max = array[i];
-    }
+	for (i = 0; i < size; i++)
+	{
+		sort_ar[ptr[array[i]] - 1] = array[i];
+		ptr[array[i]] -= 1;
+	}
+	for (j = 0; j < size; j++)
+		array[j] = sort_ar[j];
 
-    /* Allocate memory for the counting array */
-    count_array = malloc((max + 1) * sizeof(int));
-    if (count_array == NULL)
-        return;
-
-    /* Initialize the counting array with 0s */
-    for (i = 0; i <= max; i++)
-        count_array[i] = 0;
-
-    /* Populate the counting array */
-    for (i = 0; i < (int)size; i++)
-        count_array[array[i]]++;
-
-    /* Print the counting array before cumulative addition */
-    printf("Counting array:\n");
-    for (i = 0; i <= max; i++)
-    {
-        printf("%d", count_array[i]);
-        if (i < max)
-            printf(", ");
-    }
-    printf("\n");
-
-    /* Modify the counting array to store the cumulative count */
-    for (i = 1; i <= max; i++)
-        count_array[i] += count_array[i - 1];
-
-    /* Allocate memory for the sorted array */
-    sorted_array = malloc(size * sizeof(int));
-    if (sorted_array == NULL)
-    {
-        free(count_array);
-        return;
-    }
-
-    /* Build the sorted array */
-    for (i = (int)size - 1; i >= 0; i--)
-    {
-        sorted_array[count_array[array[i]] - 1] = array[i];
-        count_array[array[i]]--;
-    }
-
-    /* Copy the sorted array back to the original array */
-    for (i = 0; i < (int)size; i++)
-        array[i] = sorted_array[i];
-
-    /* Free allocated memory */
-    free(count_array);
-    free(sorted_array);
+	free(sort_ar);
+	free(ptr);
 }
